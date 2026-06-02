@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(raylib CONFIG REQUIRED)
 
 add_executable(Arduino_radar
-    main.cpp
+    src/main.cpp
 )
 
 target_link_libraries(Arduino_radar
