@@ -1,0 +1,9 @@
+build/
+.vs/
+
+# VS Code machine-specific settings
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+
+*.pdb
