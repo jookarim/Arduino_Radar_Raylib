@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <iostream>
 #include <chrono>
+#include <Windows.h>
 
 const float OFFSET = 80.f;
 const int SMALLEST_CIRCLE_SIZE = 150;
@@ -73,7 +74,7 @@ int direction = 1;
 
 void drawRadarLines()
 {
-	for (uint8_t i = 0; i < 200; ++i)
+	for (uint8_t i = 0; i < 150; ++i)
 	{
 		float xOrigin = (SCREEN_WIDTH / 2 + i * 0.02);
 		float yOrigin = SCREEN_HEIGHT - OFFSET;
@@ -93,7 +94,6 @@ void drawRadarLines()
 		{
 			direction = -1;
 		}
-
 		
 	}
 

@@ -1,18 +1,39 @@
 #include <Arduino.h>
+#include <ESP32Servo.h>
 
-// put function declarations here:
-int myFunction(int, int);
+
+Servo servo;
+unsigned long prevTime = 0;
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+  servo.attach(18);
+  servo.write(0);
+  Serial.begin(9600);
 }
+
+int angle = 0;
+int direction = 1;
 
 void loop() {
-  // put your main code here, to run repeatedly:
-}
+      unsigned long currTime = millis();
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+      if(currTime - prevTime >= 200)
+      {
+        prevTime = currTime;
+        servo.write(angle);
+        angle += direction;
+
+        if(angle >= 180)
+        {
+          direction = -1;
+        }
+
+        else if(angle <= 0)
+        {
+          direction = 1;
+        }
+
+        Serial.println(angle);
+      }
+    
 }
