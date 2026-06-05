@@ -9,6 +9,12 @@ find_package(raylib CONFIG REQUIRED)
 
 add_executable(Arduino_radar
     src/main.cpp
+    src/SerialPort.cpp
+)
+
+target_include_directories(Arduino_radar
+    PRIVATE
+    include
 )
 
 target_link_libraries(Arduino_radar

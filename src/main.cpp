@@ -1,10 +1,11 @@
 #include <raylib.h>
+#include "SerialPort.h"
+
 #include <cmath>
 #include <cstring>
 #include <cstdint>
 #include <iostream>
 #include <chrono>
-#include <Windows.h>
 
 const float OFFSET = 80.f;
 const int SMALLEST_CIRCLE_SIZE = 150;
@@ -69,36 +70,23 @@ void drawLines()
 	}
 }
 
-float currAngle = 0.f;
-int direction = 1;
-
-void drawRadarLines()
+void drawRadarLines(float angle)
 {
-	for (uint8_t i = 0; i < 150; ++i)
+	for (uint8_t i = 0; i < 1; ++i)
 	{
 		float xOrigin = (SCREEN_WIDTH / 2 + i * 0.02);
 		float yOrigin = SCREEN_HEIGHT - OFFSET;
-		float xEnd = xOrigin + MAX_RADIUS * std::cos((currAngle + 0.1 * i) * (PI / 180));
-		float yEnd = yOrigin - MAX_RADIUS * std::sin((currAngle + 0.1 * i) * (PI / 180));
+		float xEnd = xOrigin + MAX_RADIUS * std::cos((angle + 0.1 * i) * (PI / 180));
+		float yEnd = yOrigin - MAX_RADIUS * std::sin((angle + 0.1 * i) * (PI / 180));
 		
+		// if(angle + 0.1 * 15 >= 180)
+		// {
+		// 	angle = 180 -  0.1 * 15;
+		// }
 		uint8_t alpha = 255 - i;
 
 		DrawLine(xOrigin, yOrigin, xEnd, yEnd, Color{0, 255, 0, alpha});
-
-		if (currAngle <= 0.f)
-		{
-			direction = 1;
-		}
-
-		else if (currAngle + i * 0.1 >= 180)
-		{
-			direction = -1;
-		}
-		
 	}
-
-	currAngle += 10 * GetFrameTime() * direction;
-	std::cout << currAngle << "\n";
 
 }
 
@@ -149,7 +137,7 @@ void drawPointObstacle(float distance, float angle)
 	DrawCircle(pointX, pointY, 4, pointColor);
 }
 
-void render()
+void render(float angle)
 {
 	for (int i = 1; i <= 5; ++i)
 	{
@@ -158,7 +146,7 @@ void render()
 
 	drawAngles();
 
-	drawRadarLines();
+	drawRadarLines(angle);
 
 	drawPointObstacle(22.f, 90.f);
 	drawLines();
@@ -166,22 +154,40 @@ void render()
 
 int main()
 {
-	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Window");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Radar");
 
-	SetConfigFlags(FLAG_MSAA_4X_HINT);
+    SetTargetFPS(50);
 
-	SetTargetFPS(60);
+    if (!OpenSerialPort("\\\\.\\COM10"))
+    {
+        std::cout << "Failed to open COM10\n";
+        CloseWindow();
+        return 0;
+    }
+    
+    float targetAngle = 0;
+float radarAngle = 0;
 
-	while (!WindowShouldClose())
-	{
-		BeginDrawing();
-		ClearBackground(BLACK);
+while (!WindowShouldClose())
+{
+    int newAngle = ReadAngle();
 
+    if(newAngle != -1)
+    {
+        targetAngle = newAngle;
+    }
 
-		render();
+    radarAngle = targetAngle;
 
-		EndDrawing();
-	}
+    BeginDrawing();
+    ClearBackground(BLACK);
 
-	CloseWindow();
+    render(radarAngle);
+
+    EndDrawing();
+}
+    CloseSerialPort();
+
+    CloseWindow();
+    return 0;
 }
